@@ -161,20 +161,22 @@
 
         .patient-info-container {
             clear: both;
-            margin-top: 30px;
-            padding: 20px 30px;
-            background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 4px;
+            margin-top: 20px;
+            margin-left: 30px;
+            margin-right: 30px;
+            padding: 15px;
+            border: 1px solid #E8E8E8;
+            background-color: #F9F9F9;
+            page-break-inside: avoid;
         }
 
         .patient-info-title {
             font-size: 14px;
             font-weight: bold;
-            color: #374151;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #6366f1;
+            color: #040405;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #E8E8E8;
+            padding-bottom: 5px;
         }
 
         .patient-info-grid {
@@ -188,28 +190,27 @@
 
         .patient-info-cell {
             display: table-cell;
-            padding: 8px 15px;
-            width: 50%;
+            padding: 3px 10px 3px 0;
             vertical-align: top;
+            width: 50%;
         }
 
         .patient-info-label {
-            font-size: 10px;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #595959;
+            margin-bottom: 2px;
         }
 
         .patient-info-value {
-            font-size: 12px;
-            color: #111827;
-            font-weight: 500;
+            font-size: 11px;
+            color: #040405;
+            word-wrap: break-word;
         }
 
         .patient-info-full-width {
             display: block;
-            padding: 8px 15px;
+            padding: 3px 10px 3px 0;
             width: 100%;
         }
 
