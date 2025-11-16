@@ -12,8 +12,8 @@
           <div class="flex items-center justify-end space-x-2">
             <BaseButton
               type="button"
-              :to="`/admin/appointments`"
               variant="primary-outline"
+              @click="router.push('/admin/appointments')"
             >
               {{ $t('general.cancel') }}
             </BaseButton>
