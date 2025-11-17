@@ -79,7 +79,7 @@ if [ "$DB_CONNECTION" = "sqlite" ]; then
     if [ ! -e "$DB_DATABASE" ]; then
         echo "  Creating SQLite database..."
         cp /var/www/html/database/stubs/sqlite.empty.db "$DB_DATABASE"
-        chown www-data:www-data "$DB_DATABASE"
+        # Permissions will be set by the container user
         echo "✓ SQLite database created"
     else
         echo "✓ SQLite database already exists"
@@ -121,8 +121,7 @@ echo "✓ Caches generated"
 
 # Step 8: Set permissions
 echo "→ Setting permissions..."
-chmod +x artisan
-chmod -R 775 storage bootstrap/cache 2>/dev/null || true
+chmod +x artisan 2>/dev/null || true
 echo "✓ Permissions set"
 
 echo "

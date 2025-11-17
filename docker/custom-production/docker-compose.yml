@@ -79,7 +79,7 @@ services:
       - MAIL_PASSWORD=${MAIL_PASSWORD:-}
       - MAIL_ENCRYPTION=tls
       - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-noreply@royaldentalservices.com}
-      - MAIL_FROM_NAME="Royal Dental Services"
+      - MAIL_FROM_NAME=Royal Dental Services
       
       # Queue (for PDF generation, emails, etc.)
       - QUEUE_CONNECTION=database
