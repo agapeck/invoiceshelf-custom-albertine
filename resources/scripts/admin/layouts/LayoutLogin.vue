@@ -135,7 +135,7 @@ const pageHeading = computed(() => {
     return window.login_page_heading
   }
 
-  return 'Simple Invoicing for Individuals Small Businesses'
+  return 'Royal Dental Services'
 })
 
 const pageDescription = computed(() => {
@@ -143,7 +143,7 @@ const pageDescription = computed(() => {
     return window.login_page_description
   }
 
-  return 'InvoiceShelf helps you track expenses, record payments & generate beautiful invoices & estimates.'
+  return 'Expert Dental Care, Personalized For YOU!'
 })
 
 const copyrightText = computed(() => {
