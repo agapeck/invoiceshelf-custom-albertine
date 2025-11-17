@@ -138,13 +138,13 @@ class DashboardController extends Controller
         $total_amount_due = Invoice::whereCompany()
             ->sum('base_due_amount');
 
-        $recent_due_invoices = Invoice::with('customer')
+        $recent_due_invoices = Invoice::with(['customer', 'currency'])
             ->whereCompany()
             ->where('base_due_amount', '>', 0)
             ->take(5)
             ->latest()
             ->get();
-        $recent_estimates = Estimate::with('customer')->whereCompany()->take(5)->latest()->get();
+        $recent_estimates = Estimate::with(['customer', 'currency'])->whereCompany()->take(5)->latest()->get();
 
         return response()->json([
             'total_amount_due' => $total_amount_due,
