@@ -9,6 +9,10 @@
 Homestead.json
 Homestead.yaml
 .env
+.env.backup
+.env.testing
+.env.local
+.env.*.local
 .phpunit.result.cache
 .phpunit.cache/
 .rnd
