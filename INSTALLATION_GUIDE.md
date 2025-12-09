@@ -455,3 +455,89 @@ Your InvoiceShelf installation is now ready:
 - **Features**: Appointments, Invoices, Payments, Customers all protected against race conditions
 
 Happy invoicing! 🧾
+
+---
+
+## Restoring from Database Backup (Alternative to Fresh Install)
+
+If you have a database backup from a previous InvoiceShelf installation, follow these steps instead of running the installation wizard.
+
+### Prerequisites
+- Completed Steps 1-8 above (system dependencies, database, clone, environment, composer, npm, key, storage link)
+- A database backup file (`.sql` or `.zip` containing `.sql`)
+
+### Step A: Import Your Database Backup
+
+```bash
+# If your backup is a .zip file, extract it first
+unzip your-backup.zip
+
+# Import the SQL file
+mysql -u invoiceshelf -p invoiceshelf < your-backup.sql
+```
+
+### Step B: Run Migrations (for any schema updates)
+
+```bash
+cd /var/www/invoiceshelf
+sudo -u www-data php artisan migrate --force
+```
+
+### Step C: Create the Database Marker File
+
+The application checks for this file to determine if the database is set up. Without it, you'll be redirected to the installation wizard.
+
+```bash
+echo "$(date +%s)" > /var/www/invoiceshelf/storage/app/database_created
+sudo chown www-data:www-data /var/www/invoiceshelf/storage/app/database_created
+```
+
+### Step D: Regenerate Hashes (Required after APP_KEY change)
+
+Since your new installation has a different `APP_KEY` than your backup, all unique hashes need to be regenerated for PDF URLs to work.
+
+```bash
+cd /var/www/invoiceshelf
+php fix_regenerate_all_hashes.php
+```
+
+If you encounter hash collisions (duplicate key errors), run:
+
+```bash
+php fix_collision_hashes.php
+```
+
+**Note:** The `fix_collision_hashes.php` script may need to be updated with the specific IDs that failed. Check the output of `fix_regenerate_all_hashes.php` for failed IDs.
+
+### Step E: Clear Caches and Restart Services
+
+```bash
+cd /var/www/invoiceshelf
+sudo -u www-data php artisan config:clear
+sudo -u www-data php artisan cache:clear
+sudo -u www-data php artisan view:clear
+sudo -u www-data php artisan route:clear
+
+sudo systemctl restart php8.2-fpm nginx
+```
+
+### Step F: Verify Installation
+
+1. Open browser to `http://your-server-ip`
+2. You should see the login page (not the wizard)
+3. Log in with your existing credentials from the backup
+
+### Troubleshooting Database Restoration
+
+1. **Still seeing installation wizard?**
+   - Verify the marker file exists: `ls -la storage/app/database_created`
+   - Check database has data: `mysql -u invoiceshelf -p -e "SELECT COUNT(*) FROM invoiceshelf.users;"`
+
+2. **PDF links not working?**
+   - Run hash regeneration again
+   - Check Laravel logs for errors
+
+3. **Login not working?**
+   - Your password hash is preserved, use your old password
+   - If forgotten, reset via: `php artisan tinker` then update user password
+

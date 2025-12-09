@@ -40,3 +40,4 @@ package-lock.json
 /storage/app/backups/
 *.dump
 *.zip
+.env.save
