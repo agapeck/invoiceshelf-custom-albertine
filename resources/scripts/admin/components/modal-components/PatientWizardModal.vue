@@ -389,6 +389,16 @@
           >
             {{ $t('patient_wizard.save_and_bill') }}
           </BaseButton>
+
+          <BaseButton
+            v-if="!wizardStore.isEditMode && wizardStore.finances.pending_procedures.length > 0"
+            :loading="wizardStore.isLoading"
+            variant="primary-outline"
+            type="button"
+            @click="submitAndQuotation"
+          >
+            {{ $t('patient_wizard.quotation') }}
+          </BaseButton>
         </template>
       </div>
     </div>
@@ -569,6 +579,22 @@ async function submitPatient(andBill) {
     if (result.andBill && result.patient) {
       router.push({
         name: 'invoices.create',
+        query: { customer: result.patient.id }
+      })
+    }
+  }
+}
+
+async function submitAndQuotation() {
+  const result = await wizardStore.submitPatient(false)
+  
+  if (result.success) {
+    closeModal()
+    
+    // Redirect to quotation (estimate) creation with customer pre-selected
+    if (result.patient) {
+      router.push({
+        name: 'estimates.create',
         query: { customer: result.patient.id }
       })
     }
