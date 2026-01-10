@@ -30,7 +30,7 @@ export const usePatientWizardStore = (useWindow = false) => {
 
             clinical: {
                 complaints: [],
-                diagnosis: [],
+                diagnosis: '',
                 treatment: '',
                 treatment_plan_notes: '',
                 review_date: null,
@@ -107,7 +107,7 @@ export const usePatientWizardStore = (useWindow = false) => {
                 }
                 this.clinical = {
                     complaints: [],
-                    diagnosis: [],
+                    diagnosis: '',
                     treatment: '',
                     treatment_plan_notes: '',
                     review_date: null,
@@ -155,7 +155,7 @@ export const usePatientWizardStore = (useWindow = false) => {
 
                 this.clinical = {
                     complaints: patient.complaints ? (Array.isArray(patient.complaints) ? patient.complaints : [patient.complaints]) : [],
-                    diagnosis: patient.diagnosis ? (Array.isArray(patient.diagnosis) ? patient.diagnosis : [patient.diagnosis]) : [],
+                    diagnosis: patient.diagnosis || '',
                     treatment: patient.treatment || '',
                     treatment_plan_notes: patient.treatment_plan_notes || '',
                     review_date: patient.review_date || null,

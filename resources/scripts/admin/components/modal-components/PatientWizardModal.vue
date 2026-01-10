@@ -134,13 +134,19 @@
             </BaseInputGroup>
 
             <BaseInputGroup :label="$t('patient_wizard.diagnosis')">
+              <!-- Dropdown to prefill diagnosis textarea -->
               <BaseMultiselect
-                v-model="wizardStore.clinical.diagnosis"
+                v-model="selectedDiagnosis"
                 :options="dentalDiagnoses"
-                mode="tags"
                 searchable
-                :create-option="true"
                 :placeholder="$t('patient_wizard.select_diagnosis')"
+                class="mb-1"
+                @change="prefillDiagnosis"
+              />
+              <BaseTextarea
+                v-model="wizardStore.clinical.diagnosis"
+                :placeholder="$t('patient_wizard.diagnosis_placeholder')"
+                rows="2"
               />
             </BaseInputGroup>
 
@@ -427,6 +433,18 @@ const itemStore = useItemStore()
 const paymentStore = usePaymentStore()
 
 const selectedItem = ref(null)
+const selectedDiagnosis = ref(null)
+
+function prefillDiagnosis(value) {
+  if (!value) return
+  // Append selected diagnosis to existing text (or replace if empty)
+  if (wizardStore.clinical.diagnosis && wizardStore.clinical.diagnosis.trim()) {
+    wizardStore.clinical.diagnosis = wizardStore.clinical.diagnosis + ', ' + value
+  } else {
+    wizardStore.clinical.diagnosis = value
+  }
+  selectedDiagnosis.value = null
+}
 
 const modalActive = computed(
   () => modalStore.active && modalStore.componentName === 'PatientWizardModal'
