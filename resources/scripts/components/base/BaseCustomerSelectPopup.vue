@@ -462,7 +462,8 @@ async function editCustomer() {
   await customerStore.fetchCustomer(selectedCustomer.value.id)
   modalStore.openModal({
     title: t('customers.edit_customer'),
-    componentName: 'CustomerModal',
+    componentName: 'PatientWizardModal',
+    data: { isEdit: true },
   })
 }
 
@@ -495,8 +496,8 @@ async function searchCustomer() {
 function openCustomerModal() {
   modalStore.openModal({
     title: t('customers.add_customer'),
-    componentName: 'CustomerModal',
-    variant: 'md',
+    componentName: 'PatientWizardModal',
+    variant: 'lg',
   })
 }
 

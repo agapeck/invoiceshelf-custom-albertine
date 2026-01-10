@@ -31,7 +31,7 @@
 
           <BaseButton
             v-if="userStore.hasAbilities(abilities.CREATE_CUSTOMER)"
-            @click="$router.push('customers/create')"
+            @click="openPatientWizard"
           >
             <template #left="slotProps">
               <BaseIcon name="PlusIcon" :class="slotProps.class" />
@@ -82,7 +82,7 @@
         <BaseButton
           v-if="userStore.hasAbilities(abilities.CREATE_CUSTOMER)"
           variant="primary-outline"
-          @click="$router.push('/admin/customers/create')"
+          @click="openPatientWizard"
         >
           <template #left="slotProps">
             <BaseIcon name="PlusIcon" :class="slotProps.class" />
@@ -201,6 +201,7 @@ import { useCustomerStore } from '@/scripts/admin/stores/customer'
 import { useDialogStore } from '@/scripts/stores/dialog'
 import { useCompanyStore } from '@/scripts/admin/stores/company'
 import { useUserStore } from '@/scripts/admin/stores/user'
+import { useModalStore } from '@/scripts/stores/modal'
 
 import abilities from '@/scripts/admin/stub/abilities'
 
@@ -211,6 +212,7 @@ const companyStore = useCompanyStore()
 const dialogStore = useDialogStore()
 const customerStore = useCustomerStore()
 const userStore = useUserStore()
+const modalStore = useModalStore()
 
 let tableComponent = ref(null)
 let showFilters = ref(false)
@@ -336,6 +338,15 @@ function toggleFilter() {
   }
 
   showFilters.value = !showFilters.value
+}
+
+function openPatientWizard() {
+  customerStore.resetCurrentCustomer()
+  modalStore.openModal({
+    title: t('customers.new_customer'),
+    componentName: 'PatientWizardModal',
+    variant: 'lg',
+  })
 }
 
 let date = ref(new Date())

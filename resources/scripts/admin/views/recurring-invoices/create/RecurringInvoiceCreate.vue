@@ -334,7 +334,8 @@ async function editCustomer() {
   await customerStore.fetchCustomer(selectedCustomer)
   modalStore.openModal({
     title: t('customers.edit_customer'),
-    componentName: 'CustomerModal',
+    componentName: 'PatientWizardModal',
+    data: { isEdit: true },
   })
 }
 

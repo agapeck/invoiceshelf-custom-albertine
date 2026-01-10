@@ -98,7 +98,8 @@ async function addCustomer() {
 
   modalStore.openModal({
     title: t('customers.add_new_customer'),
-    componentName: 'CustomerModal',
+    componentName: 'PatientWizardModal',
+    variant: 'lg',
   })
 }
 </script>
