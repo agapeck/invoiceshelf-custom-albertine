@@ -376,6 +376,11 @@ async function initializeWizard() {
   // Set default currency
   wizardStore.demographics.currency_id = companyStore.selectedCompanyCurrency?.id
   
+  // Ensure currencies are loaded for the dropdown
+  if (!globalStore.currencies || globalStore.currencies.length === 0) {
+    await globalStore.fetchCurrencies()
+  }
+  
   // Ensure items are loaded for procedure selection
   if (!itemStore.items || itemStore.items.length === 0) {
     await itemStore.fetchItems({ limit: 'all' })
