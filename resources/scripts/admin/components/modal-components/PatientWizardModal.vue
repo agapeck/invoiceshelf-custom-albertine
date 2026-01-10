@@ -164,7 +164,7 @@
             <!-- Procedure search -->
             <BaseMultiselect
               v-model="selectedItem"
-              :options="globalStore.items"
+              :options="itemStore.items"
               value-prop="id"
               searchable
               :placeholder="$t('patient_wizard.procedures_placeholder')"
@@ -323,6 +323,8 @@ import { useModalStore } from '@/scripts/stores/modal'
 import { usePatientWizardStore } from '@/scripts/admin/stores/patient-wizard'
 import { useGlobalStore } from '@/scripts/admin/stores/global'
 import { useCompanyStore } from '@/scripts/admin/stores/company'
+import { useItemStore } from '@/scripts/admin/stores/item'
+import { usePaymentStore } from '@/scripts/admin/stores/payment'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -330,6 +332,8 @@ const modalStore = useModalStore()
 const wizardStore = usePatientWizardStore()
 const globalStore = useGlobalStore()
 const companyStore = useCompanyStore()
+const itemStore = useItemStore()
+const paymentStore = usePaymentStore()
 
 const selectedItem = ref(null)
 
@@ -354,7 +358,7 @@ const displaySteps = computed(() => {
 })
 
 const paymentMethods = computed(() => {
-  return companyStore.selectedCompany?.payment_methods || []
+  return paymentStore.paymentModes || []
 })
 
 function formatMoney(amount) {
@@ -373,8 +377,13 @@ async function initializeWizard() {
   wizardStore.demographics.currency_id = companyStore.selectedCompanyCurrency?.id
   
   // Ensure items are loaded for procedure selection
-  if (!globalStore.items || globalStore.items.length === 0) {
-    await globalStore.fetchItems()
+  if (!itemStore.items || itemStore.items.length === 0) {
+    await itemStore.fetchItems({ limit: 'all' })
+  }
+  
+  // Ensure payment modes are loaded
+  if (!paymentStore.paymentModes || paymentStore.paymentModes.length === 0) {
+    await paymentStore.fetchPaymentModes()
   }
   
   // Check if editing an existing patient
@@ -400,7 +409,7 @@ function checkFileNumber() {
 
 function addProcedure(itemId) {
   if (!itemId) return
-  const item = globalStore.items.find(i => i.id === itemId)
+  const item = itemStore.items.find(i => i.id === itemId)
   if (item) {
     wizardStore.addProcedure(item)
   }
