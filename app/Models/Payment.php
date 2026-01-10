@@ -7,6 +7,7 @@ use App\Mail\SendPaymentMail;
 use App\Services\SerialNumberFormatter;
 use App\Traits\GeneratesPdfTrait;
 use App\Traits\HasCustomFieldsTrait;
+use App\Traits\ReleasesDocumentNumber;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +26,7 @@ class Payment extends Model implements HasMedia
     use HasCustomFieldsTrait;
     use HasFactory;
     use InteractsWithMedia;
+    use ReleasesDocumentNumber;
     use SoftDeletes;
 
     public const PAYMENT_MODE_CHECK = 'CHECK';
@@ -531,5 +533,14 @@ class Payment extends Model implements HasMedia
 
             return $payment;
         });
+    }
+
+    /**
+     * Get the document number field name for this model.
+     * Required by ReleasesDocumentNumber trait.
+     */
+    protected function getDocumentNumberField(): string
+    {
+        return 'payment_number';
     }
 }

@@ -9,6 +9,7 @@ use App\Services\SerialNumberFormatter;
 use App\Space\PdfTemplateUtils;
 use App\Traits\GeneratesPdfTrait;
 use App\Traits\HasCustomFieldsTrait;
+use App\Traits\ReleasesDocumentNumber;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,7 @@ class Invoice extends Model implements HasMedia
     use HasCustomFieldsTrait;
     use HasFactory;
     use InteractsWithMedia;
+    use ReleasesDocumentNumber;
     use SoftDeletes;
 
     public const STATUS_DRAFT = 'DRAFT';
@@ -783,5 +785,14 @@ class Invoice extends Model implements HasMedia
         }
 
         return true;
+    }
+
+    /**
+     * Get the document number field name for this model.
+     * Required by ReleasesDocumentNumber trait.
+     */
+    protected function getDocumentNumberField(): string
+    {
+        return 'invoice_number';
     }
 }
