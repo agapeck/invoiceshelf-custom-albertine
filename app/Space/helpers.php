@@ -194,3 +194,29 @@ function respondJson($error, $message)
         'message' => $message,
     ], 422);
 }
+
+/**
+ * Convert number to words using PHP's native NumberFormatter
+ * 
+ * @param int|float $number
+ * @param string $locale
+ * @return string
+ */
+function numberToWords(int|float $number, string $locale = 'en'): string
+{
+    $formatter = new \NumberFormatter($locale, \NumberFormatter::SPELLOUT);
+    return $formatter->format((int) $number);
+}
+
+/**
+ * Convert number to words with currency suffix
+ * 
+ * @param int|float $number
+ * @param string $currency
+ * @return string
+ */
+function numberToWordsWithCurrency(int|float $number, string $currency = 'shillings'): string
+{
+    return ucfirst(numberToWords($number)) . ' ' . $currency . ' only';
+}
+

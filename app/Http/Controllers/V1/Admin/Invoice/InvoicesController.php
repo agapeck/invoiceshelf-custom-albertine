@@ -7,6 +7,7 @@ use App\Http\Requests;
 use App\Http\Requests\DeleteInvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Jobs\GenerateInvoicePdfJob;
+use App\Models\Customer;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 
@@ -46,6 +47,18 @@ class InvoicesController extends Controller
         $this->authorize('create', Invoice::class);
 
         $invoice = Invoice::createInvoice($request);
+
+        // Clear pending procedures after successful invoice creation (dental handoff pattern)
+        // Security: Use whereCompany() to ensure customer belongs to the same company
+        if ($request->customer_id) {
+            $customer = Customer::whereCompany()
+                ->where('id', $request->customer_id)
+                ->first();
+            
+            if ($customer?->pending_procedures) {
+                $customer->clearPendingProcedures();
+            }
+        }
 
         if ($request->has('invoiceSend')) {
             $invoice->send($request->subject, $request->body);

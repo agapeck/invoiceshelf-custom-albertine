@@ -112,6 +112,36 @@ class CustomerRequest extends FormRequest
             'shipping.fax' => [
                 'nullable',
             ],
+            
+            // Patient/Dental fields
+            'file_number' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('customers')
+                    ->where('company_id', $this->header('company'))
+                    ->ignore($this->route('customer')?->id),
+            ],
+            'gender' => ['nullable', 'string', 'in:Male,Female'],
+            'age' => ['nullable', 'integer', 'min:0', 'max:150'],
+            'next_of_kin' => ['nullable', 'string', 'max:255'],
+            'next_of_kin_phone' => ['nullable', 'string', 'max:50'],
+            'attended_to_by' => ['nullable', 'string', 'max:255'],
+            'complaints' => ['nullable', 'string', 'max:65000'],
+            'diagnosis' => ['nullable', 'string', 'max:65000'],
+            'treatment' => ['nullable', 'string', 'max:65000'],
+            'treatment_plan_notes' => ['nullable', 'string', 'max:65000'],
+            'review_date' => ['nullable', 'date'],
+            
+            // JSON pending procedures (validated as array, stored as JSON)
+            'pending_procedures' => ['nullable', 'array'],
+            'pending_procedures.*.item_id' => ['required_with:pending_procedures', 'exists:items,id'],
+            'pending_procedures.*.name' => ['required_with:pending_procedures', 'string'],
+            'pending_procedures.*.quantity' => ['required_with:pending_procedures', 'integer', 'min:1'],
+            'pending_procedures.*.price' => ['required_with:pending_procedures', 'integer', 'min:0'],
+            'pending_procedures.*.description' => ['nullable', 'string'],
+            
+            'initial_payment_method' => ['nullable', 'string'],
         ];
 
         if ($this->isMethod('PUT') && $this->email != null) {
@@ -143,6 +173,20 @@ class CustomerRequest extends FormRequest
                 'estimate_prefix',
                 'payment_prefix',
                 'invoice_prefix',
+                // Patient/Dental fields
+                'file_number',
+                'gender',
+                'age',
+                'next_of_kin',
+                'next_of_kin_phone',
+                'attended_to_by',
+                'complaints',
+                'diagnosis',
+                'treatment',
+                'treatment_plan_notes',
+                'pending_procedures',  // JSON array
+                'review_date',
+                'initial_payment_method',
             ])
             ->merge([
                 'creator_id' => $this->user()->id,

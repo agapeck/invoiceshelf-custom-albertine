@@ -51,6 +51,30 @@ class CustomerResource extends JsonResource
             'currency' => $this->when($this->currency()->exists(), function () {
                 return new CurrencyResource($this->currency);
             }),
+            
+            // Patient demographics
+            'file_number' => $this->file_number,
+            'gender' => $this->gender,
+            'age' => $this->age,
+            'next_of_kin' => $this->next_of_kin,
+            'next_of_kin_phone' => $this->next_of_kin_phone,
+            'attended_to_by' => $this->attended_to_by,
+            
+            // Clinical notes
+            'complaints' => $this->complaints,
+            'diagnosis' => $this->diagnosis,
+            'treatment' => $this->treatment,
+            'treatment_plan_notes' => $this->treatment_plan_notes,
+            'review_date' => $this->review_date,
+            'formatted_review_date' => $this->formattedReviewDate,
+            
+            // Pending procedures (JSON - for auto-population into invoices)
+            'pending_procedures' => $this->pending_procedures,
+            'has_pending_procedures' => $this->hasPendingProcedures(),
+            'pending_procedures_total' => $this->getPendingProceduresTotal(),
+            
+            // Payment tracking
+            'initial_payment_method' => $this->initial_payment_method,
         ];
     }
 }

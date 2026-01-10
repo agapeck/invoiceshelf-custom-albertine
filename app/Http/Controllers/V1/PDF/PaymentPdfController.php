@@ -16,7 +16,7 @@ class PaymentPdfController extends Controller
     public function __invoke(Request $request, Payment $payment)
     {
         if ($request->has('preview')) {
-            return view('app.pdf.payment.payment');
+            return view('app.pdf.payment.dental-receipt');
         }
 
         return $payment->getGeneratedPDFOrStream('payment');

@@ -431,11 +431,14 @@ class Payment extends Model implements HasMedia
             'logo' => $logo ?? null,
         ]);
 
+        // Use dental receipt template with amount in words feature
+        $templatePath = 'app.pdf.payment.dental-receipt';
+
         if (request()->has('preview')) {
-            return view('app.pdf.payment.payment');
+            return view($templatePath);
         }
 
-        return PDF::loadView('app.pdf.payment.payment');
+        return PDF::loadView($templatePath);
     }
 
     public function getCompanyAddress()

@@ -52,7 +52,38 @@ class Customer extends Authenticatable implements HasMedia
             'enable_portal' => 'boolean',
             'review_date' => 'date',
             'age' => 'integer',
+            'pending_procedures' => 'array',  // Auto JSON encode/decode
         ];
+    }
+
+    /**
+     * Check if customer has pending procedures to bill
+     */
+    public function hasPendingProcedures(): bool
+    {
+        return !empty($this->pending_procedures);
+    }
+
+    /**
+     * Get total amount of pending procedures
+     */
+    public function getPendingProceduresTotal(): int
+    {
+        if (!$this->pending_procedures) {
+            return 0;
+        }
+        
+        return collect($this->pending_procedures)->sum(function ($proc) {
+            return ($proc['price'] ?? 0) * ($proc['quantity'] ?? 1);
+        });
+    }
+
+    /**
+     * Clear pending procedures (called after invoice creation)
+     */
+    public function clearPendingProcedures(): void
+    {
+        $this->update(['pending_procedures' => null]);
     }
 
     public function getFormattedCreatedAtAttribute($value)
@@ -302,7 +333,10 @@ class Customer extends Authenticatable implements HasMedia
 
     public function scopeWhereDisplayName($query, $displayName)
     {
-        return $query->where('name', 'LIKE', '%'.$displayName.'%');
+        return $query->where(function ($query) use ($displayName) {
+            $query->where('name', 'LIKE', '%' . $displayName . '%')
+                ->orWhere('file_number', 'LIKE', '%' . $displayName . '%');  // Enable file number search
+        });
     }
 
     public function scopeWhereOrder($query, $orderByField, $orderBy)
@@ -316,7 +350,8 @@ class Customer extends Authenticatable implements HasMedia
             $query->where(function ($query) use ($term) {
                 $query->where('name', 'LIKE', '%'.$term.'%')
                     ->orWhere('email', 'LIKE', '%'.$term.'%')
-                    ->orWhere('phone', 'LIKE', '%'.$term.'%');
+                    ->orWhere('phone', 'LIKE', '%'.$term.'%')
+                    ->orWhere('file_number', 'LIKE', '%'.$term.'%');  // Enable file number search
             });
         }
     }

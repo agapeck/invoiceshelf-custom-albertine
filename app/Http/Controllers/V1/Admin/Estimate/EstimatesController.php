@@ -7,6 +7,7 @@ use App\Http\Requests\DeleteEstimatesRequest;
 use App\Http\Requests\EstimatesRequest;
 use App\Http\Resources\EstimateResource;
 use App\Jobs\GenerateEstimatePdfJob;
+use App\Models\Customer;
 use App\Models\Estimate;
 use Illuminate\Http\Request;
 
@@ -36,6 +37,18 @@ class EstimatesController extends Controller
         $this->authorize('create', Estimate::class);
 
         $estimate = Estimate::createEstimate($request);
+
+        // Clear pending procedures after successful estimate creation (dental handoff pattern)
+        // Security: Use whereCompany() to ensure customer belongs to the same company
+        if ($request->customer_id) {
+            $customer = Customer::whereCompany()
+                ->where('id', $request->customer_id)
+                ->first();
+            
+            if ($customer?->pending_procedures) {
+                $customer->clearPendingProcedures();
+            }
+        }
 
         if ($request->has('estimateSend')) {
             $estimate->send($request->title, $request->body);

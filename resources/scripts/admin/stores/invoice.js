@@ -500,6 +500,33 @@ export const useInvoiceStore = (useWindow = false) => {
           let response = await customerStore.fetchCustomer(route.query.customer)
           this.newInvoice.customer = response.data.data
           this.newInvoice.customer_id = response.data.data.id
+
+          // Auto-populate invoice items from patient's pending_procedures
+          // This implements the "Save & Bill" workflow from the patient wizard
+          const customer = response.data.data
+          if (customer.pending_procedures && customer.pending_procedures.length > 0) {
+            // Clear default empty item
+            this.newInvoice.items = []
+
+            // Add each pending procedure as an invoice line item
+            customer.pending_procedures.forEach(proc => {
+              this.newInvoice.items.push({
+                ...invoiceItemStub,
+                id: Guid.raw(),
+                item_id: proc.item_id,
+                name: proc.name,
+                description: proc.description || '',
+                price: proc.price,
+                quantity: proc.quantity || 1,
+                unit_name: '',
+                total: (proc.price || 0) * (proc.quantity || 1),
+                discount_type: 'fixed',
+                discount: 0,
+                discount_val: 0,
+                taxes: [{ ...taxStub, id: Guid.raw() }],
+              })
+            })
+          }
         }
 
         let editActions = []

@@ -13,6 +13,7 @@ use App\Http\Controllers\V1\Admin\Customer\UpdatePatientInfoController;
 use App\Http\Controllers\V1\Admin\Customer\CustomerStatsController;
 use App\Http\Controllers\V1\Admin\CustomField\CustomFieldsController;
 use App\Http\Controllers\V1\Admin\Dashboard\DashboardController;
+use App\Http\Controllers\V1\Admin\Patient\PatientWizardController;
 use App\Http\Controllers\V1\Admin\Estimate\ChangeEstimateStatusController;
 use App\Http\Controllers\V1\Admin\Estimate\CloneEstimateController;
 use App\Http\Controllers\V1\Admin\Estimate\ConvertEstimateController;
@@ -252,6 +253,18 @@ Route::prefix('/v1')->group(function () {
             Route::patch('customers/{customer}/patient-info', UpdatePatientInfoController::class);
 
             Route::resource('customers', CustomersController::class);
+
+            // Patient Wizard
+            // ----------------------------------
+
+            Route::prefix('patients/wizard')->group(function () {
+                Route::post('/', [PatientWizardController::class, 'store']);
+                Route::post('/draft', [PatientWizardController::class, 'saveDraft']);
+                Route::get('/draft', [PatientWizardController::class, 'getDraft']);
+                Route::delete('/draft', [PatientWizardController::class, 'clearDraft']);
+            });
+
+            Route::get('/patients/check-file-number', [PatientWizardController::class, 'checkFileNumber']);
 
             // Appointments
             // ----------------------------------
