@@ -1840,6 +1840,11 @@
     "procedure_notes": "Clinical Notes (optional)",
     "patient_saved": "Patient saved successfully",
     "patient_updated": "Patient updated successfully",
-    "pending_procedures_info": "These procedures will be added to an invoice when you click 'Save & Bill'"
+    "pending_procedures_info": "These procedures will be added to an invoice when you click 'Save & Bill'",
+    "summary": "Summary",
+    "add_procedure_placeholder": "Search for procedure...",
+    "total": "Total",
+    "no_procedures": "No procedures added",
+    "add_in_step_2": "Add procedures in Clinical Notes step"
   }
 }

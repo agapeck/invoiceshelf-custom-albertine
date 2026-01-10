@@ -126,7 +126,7 @@
               <BaseTextarea
                 v-model="wizardStore.clinical.complaints"
                 :placeholder="$t('patient_wizard.complaints_placeholder')"
-                rows="3"
+                rows="2"
               />
             </BaseInputGroup>
 
@@ -134,7 +134,7 @@
               <BaseTextarea
                 v-model="wizardStore.clinical.diagnosis"
                 :placeholder="$t('patient_wizard.diagnosis_placeholder')"
-                rows="3"
+                rows="2"
               />
             </BaseInputGroup>
 
@@ -142,11 +142,99 @@
               <BaseTextarea
                 v-model="wizardStore.clinical.treatment_plan_notes"
                 :placeholder="$t('patient_wizard.plan_placeholder')"
-                rows="3"
+                rows="2"
               />
             </BaseInputGroup>
 
-            <BaseInputGroup :label="$t('patient_wizard.review_date')">
+            <!-- Treatment Procedures Section -->
+            <div class="mt-2">
+              <label class="text-sm font-medium text-gray-700">
+                {{ $t('patient_wizard.treatment') }}
+              </label>
+              
+              <!-- Procedure search -->
+              <BaseMultiselect
+                v-model="selectedItem"
+                :options="itemStore.items"
+                value-prop="id"
+                searchable
+                :placeholder="$t('patient_wizard.add_procedure_placeholder')"
+                track-by="name"
+                label="name"
+                class="mt-1"
+                @change="addProcedure"
+              />
+
+              <!-- Procedure list (editable) -->
+              <div v-if="wizardStore.finances.pending_procedures.length > 0" class="border rounded-lg overflow-hidden mt-2">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">
+                        {{ $t('patient_wizard.procedure_name') }}
+                      </th>
+                      <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 w-16">
+                        {{ $t('patient_wizard.procedure_qty') }}
+                      </th>
+                      <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 w-20">
+                        {{ $t('patient_wizard.procedure_price') }}
+                      </th>
+                      <th class="px-3 py-2 w-8"></th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr 
+                      v-for="(proc, index) in wizardStore.finances.pending_procedures" 
+                      :key="index"
+                    >
+                      <td class="px-3 py-2">
+                        <div class="text-sm font-medium text-gray-900">{{ proc.name }}</div>
+                        <input
+                          v-model="proc.description"
+                          type="text"
+                          class="mt-1 text-xs text-gray-500 border-0 border-b border-dashed w-full focus:ring-0 p-0"
+                          :placeholder="$t('patient_wizard.procedure_notes')"
+                        />
+                      </td>
+                      <td class="px-3 py-2 text-center">
+                        <input
+                          v-model.number="proc.quantity"
+                          type="number"
+                          min="1"
+                          class="w-14 text-center text-sm border rounded"
+                        />
+                      </td>
+                      <td class="px-3 py-2 text-right text-sm">
+                        {{ formatMoney(proc.price * proc.quantity) }}
+                      </td>
+                      <td class="px-3 py-2">
+                        <BaseIcon
+                          name="XMarkIcon"
+                          class="h-4 w-4 text-gray-400 hover:text-red-500 cursor-pointer"
+                          @click="wizardStore.removeProcedure(index)"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot class="bg-gray-50">
+                    <tr>
+                      <td colspan="2" class="px-3 py-2 text-right text-sm font-medium">
+                        {{ $t('patient_wizard.total') }}:
+                      </td>
+                      <td class="px-3 py-2 text-right text-sm font-bold text-primary-600">
+                        {{ formatMoney(wizardStore.billableTotal) }}
+                      </td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <div v-else class="text-center py-4 text-gray-400 text-sm border rounded-lg mt-2">
+                {{ $t('patient_wizard.no_procedures') }}
+              </div>
+            </div>
+
+            <BaseInputGroup :label="$t('patient_wizard.review_date')" class="mt-2">
               <BaseDatePicker
                 v-model="wizardStore.clinical.review_date"
               />
@@ -154,28 +242,13 @@
           </BaseInputGrid>
         </div>
 
-        <!-- Step 3: Finances (only for new patients) -->
+        <!-- Step 3: Summary (only for new patients) -->
         <div v-show="wizardStore.currentStep === 3 && !wizardStore.isEditMode">
-          <div class="mb-4">
-            <label class="text-sm font-medium text-gray-700">
-              {{ $t('patient_wizard.procedures') }}
-            </label>
-            
-            <!-- Procedure search -->
-            <BaseMultiselect
-              v-model="selectedItem"
-              :options="itemStore.items"
-              value-prop="id"
-              searchable
-              :placeholder="$t('patient_wizard.procedures_placeholder')"
-              track-by="name"
-              label="name"
-              class="mt-1"
-              @change="addProcedure"
-            />
-          </div>
+          <h4 class="text-sm font-medium text-gray-700 mb-2">
+            {{ $t('patient_wizard.summary') }}
+          </h4>
 
-          <!-- Pending procedures list -->
+          <!-- Read-only procedures summary -->
           <div v-if="wizardStore.finances.pending_procedures.length > 0" class="border rounded-lg overflow-hidden mb-4">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
@@ -183,13 +256,12 @@
                   <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">
                     {{ $t('patient_wizard.procedure_name') }}
                   </th>
-                  <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 w-20">
+                  <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 w-16">
                     {{ $t('patient_wizard.procedure_qty') }}
                   </th>
                   <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 w-24">
                     {{ $t('patient_wizard.procedure_price') }}
                   </th>
-                  <th class="px-4 py-2 w-10"></th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
@@ -199,53 +271,35 @@
                 >
                   <td class="px-4 py-2">
                     <div class="text-sm font-medium text-gray-900">{{ proc.name }}</div>
-                    <input
-                      v-model="proc.description"
-                      type="text"
-                      class="mt-1 text-xs text-gray-500 border-0 border-b border-dashed w-full focus:ring-0 p-0"
-                      :placeholder="$t('patient_wizard.procedure_notes')"
-                    />
+                    <div v-if="proc.description" class="text-xs text-gray-500">{{ proc.description }}</div>
                   </td>
-                  <td class="px-4 py-2 text-center">
-                    <input
-                      v-model.number="proc.quantity"
-                      type="number"
-                      min="1"
-                      class="w-16 text-center text-sm border rounded"
-                    />
+                  <td class="px-4 py-2 text-center text-sm">
+                    {{ proc.quantity }}
                   </td>
                   <td class="px-4 py-2 text-right text-sm">
                     {{ formatMoney(proc.price * proc.quantity) }}
-                  </td>
-                  <td class="px-4 py-2">
-                    <BaseIcon
-                      name="XMarkIcon"
-                      class="h-5 w-5 text-gray-400 hover:text-red-500 cursor-pointer"
-                      @click="wizardStore.removeProcedure(index)"
-                    />
                   </td>
                 </tr>
               </tbody>
               <tfoot class="bg-gray-50">
                 <tr>
                   <td colspan="2" class="px-4 py-2 text-right text-sm font-medium">
-                    {{ $t('patient_wizard.billable_amount') }}:
+                    {{ $t('patient_wizard.total') }}:
                   </td>
                   <td class="px-4 py-2 text-right text-sm font-bold text-primary-600">
                     {{ formatMoney(wizardStore.billableTotal) }}
                   </td>
-                  <td></td>
                 </tr>
               </tfoot>
             </table>
           </div>
-          <div v-else class="text-center py-8 text-gray-400">
-            {{ $t('patient_wizard.no_procedures_selected') }}
-            <p class="text-xs mt-1">{{ $t('patient_wizard.add_procedure_hint') }}</p>
+          <div v-else class="text-center py-6 text-gray-400 border rounded-lg mb-4">
+            {{ $t('patient_wizard.no_procedures') }}
+            <p class="text-xs mt-1">{{ $t('patient_wizard.add_in_step_2') }}</p>
           </div>
 
           <!-- Payment method -->
-          <BaseInputGroup :label="$t('patient_wizard.payment_method')" class="mt-4">
+          <BaseInputGroup :label="$t('patient_wizard.payment_method')">
             <BaseMultiselect
               v-model="wizardStore.finances.initial_payment_method"
               :options="paymentMethods"

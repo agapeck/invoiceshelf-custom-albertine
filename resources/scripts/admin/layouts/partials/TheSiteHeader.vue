@@ -108,9 +108,9 @@
             </BaseDropdownItem>
           </router-link>
 
-          <router-link to="/admin/customers/create">
-            <BaseDropdownItem
+          <BaseDropdownItem
               v-if="userStore.hasAbilities(abilities.CREATE_CUSTOMER)"
+              @click="openPatientWizard"
             >
               <BaseIcon
                 name="UserIcon"
@@ -119,7 +119,6 @@
               />
               {{ $t('customers.new_customer') }}
             </BaseDropdownItem>
-          </router-link>
         </BaseDropdown>
       </li>
 
@@ -178,6 +177,7 @@ import { useRouter } from 'vue-router'
 import { computed } from 'vue'
 import { useUserStore } from '@/scripts/admin/stores/user'
 import { useGlobalStore } from '@/scripts/admin/stores/global'
+import { useModalStore } from '@/scripts/stores/modal'
 
 import CompanySwitcher from '@/scripts/components/CompanySwitcher.vue'
 import GlobalSearchBar from '@/scripts/components/GlobalSearchBar.vue'
@@ -188,6 +188,7 @@ import abilities from '@/scripts/admin/stub/abilities'
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const globalStore = useGlobalStore()
+const modalStore = useModalStore()
 const router = useRouter()
 
 const previewAvatar = computed(() => {
@@ -224,5 +225,12 @@ async function logout() {
 
 function onToggle() {
   globalStore.setSidebarVisibility(true)
+}
+
+function openPatientWizard() {
+  modalStore.openModal({
+    componentName: 'PatientWizardModal',
+    size: 'lg'
+  })
 }
 </script>
