@@ -123,18 +123,24 @@
         <div v-show="wizardStore.currentStep === 2">
           <BaseInputGrid layout="one-column">
             <BaseInputGroup :label="$t('patient_wizard.complaints')">
-              <BaseTextarea
+              <BaseMultiselect
                 v-model="wizardStore.clinical.complaints"
-                :placeholder="$t('patient_wizard.complaints_placeholder')"
-                rows="2"
+                :options="dentalComplaints"
+                mode="tags"
+                searchable
+                :create-option="true"
+                :placeholder="$t('patient_wizard.select_complaints')"
               />
             </BaseInputGroup>
 
             <BaseInputGroup :label="$t('patient_wizard.diagnosis')">
-              <BaseTextarea
+              <BaseMultiselect
                 v-model="wizardStore.clinical.diagnosis"
-                :placeholder="$t('patient_wizard.diagnosis_placeholder')"
-                rows="2"
+                :options="dentalDiagnoses"
+                mode="tags"
+                searchable
+                :create-option="true"
+                :placeholder="$t('patient_wizard.select_diagnosis')"
               />
             </BaseInputGroup>
 
@@ -152,18 +158,28 @@
                 {{ $t('patient_wizard.treatment') }}
               </label>
               
-              <!-- Procedure search -->
-              <BaseMultiselect
-                v-model="selectedItem"
-                :options="itemStore.items"
-                value-prop="id"
-                searchable
-                :placeholder="$t('patient_wizard.add_procedure_placeholder')"
-                track-by="name"
-                label="name"
-                class="mt-1"
-                @change="addProcedure"
-              />
+              <!-- Procedure search with Add Item button -->
+              <div class="flex gap-2 mt-1">
+                <BaseMultiselect
+                  v-model="selectedItem"
+                  :options="itemStore.items"
+                  value-prop="id"
+                  searchable
+                  :placeholder="$t('patient_wizard.add_procedure_placeholder')"
+                  track-by="name"
+                  label="name"
+                  class="flex-1"
+                  @change="addProcedure"
+                />
+                <router-link 
+                  to="/admin/items/create"
+                  target="_blank"
+                  class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-50 border border-primary-200 rounded hover:bg-primary-100"
+                >
+                  <BaseIcon name="PlusIcon" class="w-4 h-4 mr-1" />
+                  {{ $t('patient_wizard.add_item') }}
+                </router-link>
+              </div>
 
               <!-- Procedure list (editable) -->
               <div v-if="wizardStore.finances.pending_procedures.length > 0" class="border rounded-lg overflow-hidden mt-2">
@@ -410,6 +426,69 @@ const genderOptions = computed(() => [
   { value: 'Male', label: t('patient_wizard.male') },
   { value: 'Female', label: t('patient_wizard.female') },
 ])
+
+// Pre-populated dental complaints for multi-select
+const dentalComplaints = [
+  'Toothache',
+  'Tooth sensitivity',
+  'Bleeding gums',
+  'Swollen gums',
+  'Bad breath',
+  'Loose tooth',
+  'Cracked/broken tooth',
+  'Missing tooth',
+  'Jaw pain',
+  'Difficulty chewing',
+  'Tooth discoloration',
+  'Mouth sores',
+  'Dry mouth',
+  'Gum recession',
+  'Tooth decay',
+  'Wisdom tooth pain',
+  'Teeth grinding',
+  'Clicking jaw',
+  'Mouth ulcers',
+  'Burning mouth',
+  'Dental abscess',
+  'Food impaction',
+  'Denture problems',
+  'Orthodontic issues',
+  'Routine checkup',
+]
+
+// Pre-populated dental diagnoses for multi-select
+const dentalDiagnoses = [
+  'Dental caries',
+  'Gingivitis',
+  'Periodontitis',
+  'Pulpitis',
+  'Dental abscess',
+  'Periapical abscess',
+  'Tooth fracture',
+  'Dental erosion',
+  'Tooth attrition',
+  'Tooth abrasion',
+  'Impacted tooth',
+  'Malocclusion',
+  'TMJ disorder',
+  'Bruxism',
+  'Oral candidiasis',
+  'Aphthous ulcer',
+  'Leukoplakia',
+  'Lichen planus',
+  'Root resorption',
+  'Tooth avulsion',
+  'Tooth luxation',
+  'Alveolar osteitis (dry socket)',
+  'Pericoronitis',
+  'Dental fluorosis',
+  'Tooth hypersensitivity',
+  'Cracked tooth syndrome',
+  'Gingival hyperplasia',
+  'Oral mucositis',
+  'Angular cheilitis',
+  'Healthy dentition',
+]
 
 const displaySteps = computed(() => {
   const steps = [

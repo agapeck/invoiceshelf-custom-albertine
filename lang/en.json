@@ -1845,6 +1845,9 @@
     "add_procedure_placeholder": "Search for procedure...",
     "total": "Total",
     "no_procedures": "No procedures added",
-    "add_in_step_2": "Add procedures in Clinical Notes step"
+    "add_in_step_2": "Add procedures in Clinical Notes step",
+    "select_complaints": "Select or type complaints...",
+    "select_diagnosis": "Select or type diagnosis...",
+    "add_item": "Add Item"
   }
 }
