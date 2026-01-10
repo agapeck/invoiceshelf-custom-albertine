@@ -176,8 +176,11 @@
                       <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 w-16">
                         {{ $t('patient_wizard.procedure_qty') }}
                       </th>
-                      <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 w-20">
+                      <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 w-24">
                         {{ $t('patient_wizard.procedure_price') }}
+                      </th>
+                      <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 w-24">
+                        {{ $t('patient_wizard.procedure_total') }}
                       </th>
                       <th class="px-3 py-2 w-8"></th>
                     </tr>
@@ -204,7 +207,15 @@
                           class="w-14 text-center text-sm border rounded"
                         />
                       </td>
-                      <td class="px-3 py-2 text-right text-sm">
+                      <td class="px-3 py-2 text-right">
+                        <input
+                          v-model.number="proc.price"
+                          type="number"
+                          min="0"
+                          class="w-20 text-right text-sm border rounded"
+                        />
+                      </td>
+                      <td class="px-3 py-2 text-right text-sm font-medium">
                         {{ formatMoney(proc.price * proc.quantity) }}
                       </td>
                       <td class="px-3 py-2">
@@ -218,7 +229,7 @@
                   </tbody>
                   <tfoot class="bg-gray-50">
                     <tr>
-                      <td colspan="2" class="px-3 py-2 text-right text-sm font-medium">
+                      <td colspan="3" class="px-3 py-2 text-right text-sm font-medium">
                         {{ $t('patient_wizard.total') }}:
                       </td>
                       <td class="px-3 py-2 text-right text-sm font-bold text-primary-600">
@@ -452,14 +463,8 @@ async function initializeWizard() {
     if (modalStore.data) {
       wizardStore.loadPatient(modalStore.data)
     }
-  } else {
-    // Check for existing draft
-    const draft = await wizardStore.loadDraft()
-    if (draft) {
-      // Could show a dialog here asking to continue draft
-      wizardStore.applyDraft(draft)
-    }
   }
+  // No draft loading - always start fresh for new patients
 }
 
 function checkFileNumber() {
