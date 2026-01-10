@@ -175,7 +175,18 @@
                 label="name"
                 class="mt-1"
                 @change="addProcedure"
-              />
+              >
+                <!-- Add Item Action inside dropdown -->
+                <template #action>
+                  <BaseSelectAction @click="openItemModal">
+                    <BaseIcon
+                      name="PlusCircleIcon"
+                      class="h-4 mr-2 -ml-2 text-center text-primary-400"
+                    />
+                    {{ $t('general.add_new_item') }}
+                  </BaseSelectAction>
+                </template>
+              </BaseMultiselect>
 
               <!-- Procedure list (editable) -->
               <div v-if="wizardStore.finances.pending_procedures.length > 0" class="border rounded-lg overflow-hidden mt-2">
@@ -255,16 +266,6 @@
               <div v-else class="text-center py-4 text-gray-400 text-sm border rounded-lg mt-2">
                 {{ $t('patient_wizard.no_procedures') }}
               </div>
-
-              <!-- Add Item button below the list -->
-              <router-link 
-                to="/admin/items/create"
-                target="_blank"
-                class="inline-flex items-center mt-2 px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
-              >
-                <BaseIcon name="PlusIcon" class="w-4 h-4 mr-1" />
-                {{ $t('patient_wizard.add_item') }}
-              </router-link>
             </div>
 
             <BaseInputGroup :label="$t('patient_wizard.review_date')" class="mt-2">
@@ -585,6 +586,20 @@ function addProcedure(itemId) {
     wizardStore.addProcedure(item)
   }
   selectedItem.value = null
+}
+
+function openItemModal() {
+  modalStore.openModal({
+    title: t('items.add_item'),
+    componentName: 'ItemModal',
+    refreshData: async (val) => {
+      // Refresh items list and add the new item as procedure
+      await itemStore.fetchItems({ limit: 'all' })
+      if (val && val.id) {
+        wizardStore.addProcedure(val)
+      }
+    },
+  })
 }
 
 async function submitPatient(andBill) {
