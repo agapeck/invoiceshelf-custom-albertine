@@ -79,7 +79,12 @@ export const usePatientWizardStore = (useWindow = false) => {
                 const companyStore = useCompanyStore()
                 return {
                     ...state.demographics,
-                    ...state.clinical,
+                    // Convert array complaints/diagnosis to comma-separated strings for backend
+                    complaints: Array.isArray(state.clinical.complaints) ? state.clinical.complaints.join(', ') : state.clinical.complaints,
+                    diagnosis: Array.isArray(state.clinical.diagnosis) ? state.clinical.diagnosis.join(', ') : state.clinical.diagnosis,
+                    treatment: state.clinical.treatment,
+                    treatment_plan_notes: state.clinical.treatment_plan_notes,
+                    review_date: state.clinical.review_date,
                     pending_procedures: state.finances.pending_procedures,
                     initial_payment_method: state.finances.initial_payment_method,
                     company_id: companyStore.selectedCompany?.id,
