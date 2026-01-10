@@ -101,7 +101,10 @@ class SerialNumberFormatter
                 $format
             );
 
-            $exists = $this->model::where('company_id', $companyId)
+            // Check with withTrashed() to include soft-deleted records
+            // since database unique constraint covers all records
+            $exists = $this->model::withTrashed()
+                ->where('company_id', $companyId)
                 ->where($modelName.'_number', $serialNumber)
                 ->exists();
 
