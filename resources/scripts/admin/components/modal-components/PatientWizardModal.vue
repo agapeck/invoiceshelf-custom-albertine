@@ -158,28 +158,18 @@
                 {{ $t('patient_wizard.treatment') }}
               </label>
               
-              <!-- Procedure search with Add Item button -->
-              <div class="flex gap-2 mt-1">
-                <BaseMultiselect
-                  v-model="selectedItem"
-                  :options="itemStore.items"
-                  value-prop="id"
-                  searchable
-                  :placeholder="$t('patient_wizard.add_procedure_placeholder')"
-                  track-by="name"
-                  label="name"
-                  class="flex-1"
-                  @change="addProcedure"
-                />
-                <router-link 
-                  to="/admin/items/create"
-                  target="_blank"
-                  class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-50 border border-primary-200 rounded hover:bg-primary-100"
-                >
-                  <BaseIcon name="PlusIcon" class="w-4 h-4 mr-1" />
-                  {{ $t('patient_wizard.add_item') }}
-                </router-link>
-              </div>
+              <!-- Procedure search -->
+              <BaseMultiselect
+                v-model="selectedItem"
+                :options="itemStore.items"
+                value-prop="id"
+                searchable
+                :placeholder="$t('patient_wizard.add_procedure_placeholder')"
+                track-by="name"
+                label="name"
+                class="mt-1"
+                @change="addProcedure"
+              />
 
               <!-- Procedure list (editable) -->
               <div v-if="wizardStore.finances.pending_procedures.length > 0" class="border rounded-lg overflow-hidden mt-2">
@@ -259,6 +249,16 @@
               <div v-else class="text-center py-4 text-gray-400 text-sm border rounded-lg mt-2">
                 {{ $t('patient_wizard.no_procedures') }}
               </div>
+
+              <!-- Add Item button below the list -->
+              <router-link 
+                to="/admin/items/create"
+                target="_blank"
+                class="inline-flex items-center mt-2 px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
+              >
+                <BaseIcon name="PlusIcon" class="w-4 h-4 mr-1" />
+                {{ $t('patient_wizard.add_item') }}
+              </router-link>
             </div>
 
             <BaseInputGroup :label="$t('patient_wizard.review_date')" class="mt-2">
