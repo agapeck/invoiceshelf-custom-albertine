@@ -93,7 +93,7 @@
 
 <script setup>
 import { useModalStore } from '@/scripts/stores/modal'
-import { computed, watchEffect, useSlots } from 'vue'
+import { computed, watch, useSlots } from 'vue'
 import {
   Dialog,
   DialogOverlay,
@@ -113,9 +113,10 @@ const emit = defineEmits(['close', 'open'])
 
 const modalStore = useModalStore()
 
-watchEffect(() => {
-  if (props.show) {
-    emit('open', props.show)
+// Only emit 'open' when show transitions from false to true
+watch(() => props.show, (newVal, oldVal) => {
+  if (newVal && !oldVal) {
+    emit('open', newVal)
   }
 })
 
