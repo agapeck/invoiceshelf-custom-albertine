@@ -410,6 +410,9 @@
       </div>
     </div>
   </BaseModal>
+  
+  <!-- ItemModal for inline item creation (rendered outside BaseModal so both can coexist) -->
+  <ItemModal />
 </template>
 
 <script setup>
@@ -423,6 +426,7 @@ import { useGlobalStore } from '@/scripts/admin/stores/global'
 import { useCompanyStore } from '@/scripts/admin/stores/company'
 import { useItemStore } from '@/scripts/admin/stores/item'
 import { usePaymentStore } from '@/scripts/admin/stores/payment'
+import ItemModal from '@/scripts/admin/components/modal-components/ItemModal.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -589,18 +593,18 @@ function addProcedure(itemId) {
 }
 
 function openItemModal() {
-  // Open items create page in new tab since modal store doesn't support stacking
-  const newWindow = window.open('/admin/items/create', '_blank')
-  
-  // When user returns to this tab, refresh items list
-  const handleFocus = async () => {
-    await itemStore.fetchItems({ limit: 'all' })
-    window.removeEventListener('focus', handleFocus)
-  }
-  
-  if (newWindow) {
-    window.addEventListener('focus', handleFocus)
-  }
+  // Open ItemModal (now included in template so it can render independently)
+  modalStore.openModal({
+    title: t('items.add_item'),
+    componentName: 'ItemModal',
+    refreshData: async (val) => {
+      // Refresh items list and add the new item as procedure
+      await itemStore.fetchItems({ limit: 'all' })
+      if (val && val.id) {
+        wizardStore.addProcedure(val)
+      }
+    },
+  })
 }
 
 async function submitPatient(andBill) {
