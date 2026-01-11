@@ -178,7 +178,7 @@
               >
                 <!-- Add Item Action inside dropdown -->
                 <template #action>
-                  <BaseSelectAction @click="openItemModal">
+                  <BaseSelectAction @click.stop="openItemModal">
                     <BaseIcon
                       name="PlusCircleIcon"
                       class="h-4 mr-2 -ml-2 text-center text-primary-400"
@@ -589,17 +589,18 @@ function addProcedure(itemId) {
 }
 
 function openItemModal() {
-  modalStore.openModal({
-    title: t('items.add_item'),
-    componentName: 'ItemModal',
-    refreshData: async (val) => {
-      // Refresh items list and add the new item as procedure
-      await itemStore.fetchItems({ limit: 'all' })
-      if (val && val.id) {
-        wizardStore.addProcedure(val)
-      }
-    },
-  })
+  // Open items create page in new tab since modal store doesn't support stacking
+  const newWindow = window.open('/admin/items/create', '_blank')
+  
+  // When user returns to this tab, refresh items list
+  const handleFocus = async () => {
+    await itemStore.fetchItems({ limit: 'all' })
+    window.removeEventListener('focus', handleFocus)
+  }
+  
+  if (newWindow) {
+    window.addEventListener('focus', handleFocus)
+  }
 }
 
 async function submitPatient(andBill) {
