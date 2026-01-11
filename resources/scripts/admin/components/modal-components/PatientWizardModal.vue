@@ -547,6 +547,11 @@ function formatMoney(amount) {
 }
 
 async function initializeWizard() {
+  // Skip reset if returning from ItemModal (preserves wizard state)
+  if (modalStore.data?.skipReset) {
+    return
+  }
+  
   // Reset to clean state
   wizardStore.resetWizard()
   
@@ -593,16 +598,33 @@ function addProcedure(itemId) {
 }
 
 function openItemModal() {
-  // Open ItemModal (now included in template so it can render independently)
+  // Remember current step before opening ItemModal
+  const currentStep = wizardStore.currentStep
+  
+  // Open ItemModal (PatientWizardModal will close, but state is preserved in Pinia store)
   modalStore.openModal({
     title: t('items.add_item'),
     componentName: 'ItemModal',
+    data: true, // Required for ItemModal to call refreshData callback
     refreshData: async (val) => {
-      // Refresh items list and add the new item as procedure
+      // Refresh items list
       await itemStore.fetchItems({ limit: 'all' })
+      
+      // Add the new item as a procedure if available
       if (val && val.id) {
         wizardStore.addProcedure(val)
       }
+      
+      // Re-open PatientWizardModal with preserved state
+      setTimeout(() => {
+        modalStore.openModal({
+          title: t('patient_wizard.title'),
+          componentName: 'PatientWizardModal',
+          data: { skipReset: true }, // Preserve wizard state
+        })
+        // Restore the step we were on
+        wizardStore.currentStep = currentStep
+      }, 100)
     },
   })
 }
