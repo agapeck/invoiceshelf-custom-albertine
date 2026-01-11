@@ -662,11 +662,6 @@ async function submitAndQuotation() {
 }
 
 function closeModal() {
-  // Auto-save draft when closing without submitting
-  if (wizardStore.demographics.name && !wizardStore.isEditMode) {
-    wizardStore.saveDraft()
-  }
-  
   modalStore.closeModal()
   setTimeout(() => {
     wizardStore.resetWizard()
